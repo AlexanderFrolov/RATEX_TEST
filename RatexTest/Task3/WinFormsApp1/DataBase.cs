@@ -15,7 +15,7 @@ namespace WinFormsApp1
 
         public void setConnection(string connectionString)
         {
-             conn = new SqlConnection(connectionString);
+            conn = new SqlConnection(connectionString);
         }
 
 

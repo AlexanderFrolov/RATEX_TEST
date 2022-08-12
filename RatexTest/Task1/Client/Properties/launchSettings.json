@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Client": {
+      "commandName": "Project",
+      "commandLineArgs": "127.0.0.1 5555 6000 D:\\develop_tests\\RatexTest\\Task1\\Client\\Конспект_СDEV_Шаблоны_и_паттерны.pdf 500"
+    }
+  }
+}
