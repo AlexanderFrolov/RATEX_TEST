@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Client1": {
+      "commandName": "Project",
+      "commandLineArgs": "127.0.0.1 5555 6000 test1.txt 500"
+    }
+  }
+}
