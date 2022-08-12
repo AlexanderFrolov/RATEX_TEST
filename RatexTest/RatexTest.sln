@@ -11,17 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp1", "Task3\WinFormsApp1\WinFormsApp1.csproj", "{2D6BA7C8-2AF3-4613-BACA-2732A5FCF3DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Task1\Server1\Server.csproj", "{FD14633B-5D6C-4A36-B4C5-BF665E76151D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{05CE37F8-598D-4137-BA8D-88ECE85A30BB} = {05CE37F8-598D-4137-BA8D-88ECE85A30BB}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientServerUdpFileExchangeWithTcpConfirmation", "Task1\ClientServerUdpFileExchangeWithTcpConfirmation\ClientServerUdpFileExchangeWithTcpConfirmation.csproj", "{05CE37F8-598D-4137-BA8D-88ECE85A30BB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Task1\Client1\Client.csproj", "{0DE9CC45-03CC-43E9-AC32-DEB9816BB5E8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{05CE37F8-598D-4137-BA8D-88ECE85A30BB} = {05CE37F8-598D-4137-BA8D-88ECE85A30BB}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientServerUdpFileExchangeWithTcpConfirmation", "Task1\ClientServerUdpFileExchangeWithTcpConfirmation\ClientServerUdpFileExchangeWithTcpConfirmation.csproj", "{05CE37F8-598D-4137-BA8D-88ECE85A30BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,18 +31,10 @@ Global
 		{2D6BA7C8-2AF3-4613-BACA-2732A5FCF3DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D6BA7C8-2AF3-4613-BACA-2732A5FCF3DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D6BA7C8-2AF3-4613-BACA-2732A5FCF3DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD14633B-5D6C-4A36-B4C5-BF665E76151D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD14633B-5D6C-4A36-B4C5-BF665E76151D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD14633B-5D6C-4A36-B4C5-BF665E76151D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD14633B-5D6C-4A36-B4C5-BF665E76151D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{05CE37F8-598D-4137-BA8D-88ECE85A30BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05CE37F8-598D-4137-BA8D-88ECE85A30BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05CE37F8-598D-4137-BA8D-88ECE85A30BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05CE37F8-598D-4137-BA8D-88ECE85A30BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0DE9CC45-03CC-43E9-AC32-DEB9816BB5E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0DE9CC45-03CC-43E9-AC32-DEB9816BB5E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0DE9CC45-03CC-43E9-AC32-DEB9816BB5E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0DE9CC45-03CC-43E9-AC32-DEB9816BB5E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
