@@ -8,7 +8,7 @@ using System.Data;
 
 namespace WinFormsApp1
 {
-    internal class DataBase
+    public class DataBase
     {
         //SqlConnection conn = new SqlConnection(@"Data Source=DESKTOP-MELE315\SQLEXPRESS01;Initial Catalog=db;Integrated Security=True;MultipleActiveResultSets=True");
         SqlConnection conn;
@@ -19,11 +19,11 @@ namespace WinFormsApp1
         }
 
 
-        public void openConnection()
+        public async Task openConnection()
         {
             if(conn.State == ConnectionState.Closed)
             {
-                conn.Open();               
+                await conn.OpenAsync();               
             }
         }
 

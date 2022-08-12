@@ -39,14 +39,14 @@ namespace WinFormsApp1
         }
 
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private async void btnStart_Click(object sender, EventArgs e)
         {          
 
             database.setConnection(connStringTextBox.Text);
 
             SqlDependency.Start(database.getConnection().ConnectionString);
 
-            database.openConnection();
+            await database.openConnection();
 
             refresh_table();
    
