@@ -55,7 +55,7 @@ namespace ClientServerUdpFileExchangeWithTcpConfirmation
             return builder.ToString();
         }
 
-        public byte[] StartUdpReceiveFile(int udpPort, string filename)
+        public byte[] StartUdpReceiveFile(int udpPort)
         {
             List<byte> data = new List<byte>();
             try

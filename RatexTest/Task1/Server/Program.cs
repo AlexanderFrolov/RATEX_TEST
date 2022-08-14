@@ -1,6 +1,5 @@
 ﻿using ClientServerUdpFileExchangeWithTcpConfirmation;
 using System.Net.Sockets;
-using System.Text;
 
 if (args.Length < 3)
 {
@@ -53,7 +52,7 @@ try
             Console.WriteLine("successfully received from client filename and udp port: {0}", tcpResponse);
 
             s.Handler.Send(s.TCP_OK_BYTE); // tcp 1 send
-            byte[] data = s.StartUdpReceiveFile(udpPort, fileName);
+            byte[] data = s.StartUdpReceiveFile(udpPort);
 
             tcpResponse = s.ReceiveTcpMessage(); // tcp receive 3
             if (tcpResponse != s.TCP_OK_STRING)
