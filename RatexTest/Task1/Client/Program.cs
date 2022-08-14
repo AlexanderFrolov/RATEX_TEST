@@ -38,8 +38,11 @@ try
         return;
     }
 
+    byte[] data = File.ReadAllBytes(c.FilePath);
+
+
     byte[] packetSend = Encoding.Unicode.GetBytes($"{c.FilePath.Split('\\').Last()} {c.UdpPort}");
-    c.TcpSender.Send(packetSend);  // send tcp  1 (имя и порт). 
+    c.TcpSender.Send(packetSend);  // send tcp  1 (name and port). 
     string response = c.ReceiveTcpMessage(); // receive tcp 1
 
     if (response != c.TCP_OK_STRING)
@@ -50,8 +53,8 @@ try
   
     Console.WriteLine("Server received file name and udp port");
 
-    bool result = c.StartUdpSendFile();
-    if (!result) return;
+    bool isFail = c.StartUdpSendFile(data);
+    if (isFail) return;
 
     Console.WriteLine("File has been successfully sent to the server!");
     c.TcpSender.Send(c.TCP_OK_BYTE);  // tcp send OK 3 
@@ -66,7 +69,6 @@ finally
 {
     if (c.TcpSender != null)
     {
-       // c.TcpSender.Shutdown(SocketShutdown.Both);
         c.TcpSender.Close();
     }  
 }
