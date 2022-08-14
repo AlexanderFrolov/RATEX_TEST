@@ -60,121 +60,80 @@ namespace ClientServerUdpFileExchangeWithTcpConfirmation
             StringBuilder builder = new StringBuilder();
             int bytes = 0;
             byte[] data = new byte[256];
-
-            try
+          
+            do
             {
-                do
-                {
-                    bytes = TcpSender.Receive(data);
-                    builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
-                }
-                while (TcpSender.Available > 0);
+                bytes = TcpSender.Receive(data);
+                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.GetType());
-            }
+            while (TcpSender.Available > 0);
+        
             return builder.ToString();
         }
 
-
-        public byte[] receiveTcpByteMessage()
+        public bool StartUdpSendFile(byte[] data)
         {
-            byte[] bytes = new byte[256];
-            int numbytes = TcpSender.Receive(bytes);
-            return bytes;
-        }
-
-        public bool StartUdpSendFile()
-        {
+            bool fail = true;
             try
             {
-                using (FileStream fSource = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
+                UdpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                IPEndPoint sendEndPoint = new IPEndPoint(IpAddress, UdpPort);
+                UdpSocket.Connect(sendEndPoint);
+                
+                TcpSender.ReceiveTimeout = Timeout;
+                int parts = data.Length / PacketSize;
+
+                if (data.Length % PacketSize != 0) parts++;
+
+                byte[] packetSend = BitConverter.GetBytes(parts);
+                UdpSocket.Send(packetSend); // udp send 1  (num parts) 
+                string? response = ReceiveTcpMessage(); // tcp 2 receive
+
+                if (response != TCP_OK_STRING)
                 {
-                    UdpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                    IPEndPoint sendEndPoint = new IPEndPoint(IpAddress, UdpPort);
-                    UdpSocket.Connect(sendEndPoint);
+                    Console.WriteLine("Error sending the number of file parts to server.");
+                    return fail;
+                }
 
-                    int numBytesToRead = (int)fSource.Length;
-                    int numBytesReaded = 0;
-                    TcpSender.ReceiveTimeout = Timeout;
-                    int parts = (int)fSource.Length / PacketSize;
+                response = null;
+                var chunks = data.Chunk<byte>(PacketSize);
 
-                    if ((int)fSource.Length % PacketSize != 0) parts++;
-
-                    byte[] packetSend = BitConverter.GetBytes(parts);
-
-                    UdpSocket.Send(packetSend); // udp send 1  (num parts) 
-                    string response = ReceiveTcpMessage(); // tcp 2 receive
-
+                foreach (var chunk in chunks)
+                {
+                    UdpSocket.Send(chunk); 
+                    try
+                    {
+                        response = ReceiveTcpMessage();
+                    }
+                    catch(SocketException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine("repeat message ...");
+                        response = ReceiveTcpMessage();
+                    }
+                                            
                     if (response != TCP_OK_STRING)
                     {
                         Console.WriteLine("Error sending the number of file parts to server.");
-                        return false;
+                        return fail;
                     }
-
-                    int n = 0;
-                    packetSend = new byte[PacketSize];
-
-                    if (parts > 1)
-                    {
-                        for (int i = 0; i < parts - 1; i++)
-                        {
-                            n = fSource.Read(packetSend, 0, PacketSize);
-                            if (n == 0) break;
-                            numBytesReaded += n;
-                            numBytesToRead -= n;
-                            UdpSocket.Send(packetSend); // send udp n-1 parts 
-                            response = ReceiveTcpMessage(); // receive tcp n-1
-
-                            if (response != TCP_OK_STRING)
-                            {
-                                Console.WriteLine("Error while sending part of a file to the server");
-                                return false;
-                            }
-
-                        }
-                        packetSend = new byte[numBytesToRead];
-                        n = fSource.Read(packetSend, 0, numBytesToRead);
-                        UdpSocket.Send(packetSend);     // send udp only or last part
-                        response = ReceiveTcpMessage(); // receiv tcp
-
-                        if (response != TCP_OK_STRING)
-                        {
-                            Console.WriteLine("Error while sending part of a file to the server");
-                            return false;
-                        }
-
-                    }
-                    else
-                    {
-                        // single part
-                        packetSend = new byte[numBytesToRead];
-                        n = fSource.Read(packetSend, 0, numBytesToRead);
-                        UdpSocket.Send(packetSend); // send udp 
-                        response = ReceiveTcpMessage();
-
-                        if (response != TCP_OK_STRING)
-                        {
-                            Console.WriteLine("Error while sending part of a file to the server");
-                            return false;
-                        }
-                    }
+                    response = null;
                 }
-                
+
+                fail = false;
+
             }
-            catch(Exception ex)
+            catch(Exception e)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.GetType());
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.GetType());
             }
             finally
             {
-                if (UdpSocket != null) UdpSocket.Close();
+                if (UdpSocket != null) UdpSocket.Close();                
             }
 
-            return true;
+            return fail;
         }
     }
 }

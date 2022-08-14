@@ -55,67 +55,39 @@ namespace ClientServerUdpFileExchangeWithTcpConfirmation
             return builder.ToString();
         }
 
-
-        public string ReceiveTcpMessage2()
+        public byte[] StartUdpReceiveFile(int udpPort, string filename)
         {
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            byte[] data = new byte[256];
-
-            try
-            {
-                do
-                {
-                    bytes = Handler.Receive(data);
-                    builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
-                }
-                while (Handler.Available > 0);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.GetType());
-            }
-            return builder.ToString();
-        }
-
-
-        public byte[] receiveTcpByteMessage()
-        {
-            byte[] bytes = new byte[256];
-            int numbytes = Handler.Receive(bytes);
-            return bytes;
-        }
-
-        public void StartUdpReceiveFile(int udpPort, string filename)
-        {
+            List<byte> data = new List<byte>();
             try
             {
                 UdpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                IPEndPoint localIP = new IPEndPoint(IpAddress, udpPort);
+                IPEndPoint localIP = new(IpAddress, udpPort);
                 UdpSocket.Bind(localIP);
-
+               
                 byte[] packetReceive = new byte[PacketSize];
                 int bytes;
                 EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
                 bytes = UdpSocket.ReceiveFrom(packetReceive, ref remoteIp); // udp receive 1  (count file parts)
                 int parts = BitConverter.ToInt32(packetReceive, 0);
                 Handler.Send(TCP_OK_BYTE); // tcp 2 send
-
-                Directory.CreateDirectory(DirectoryName);
-                string path = DirectoryName + @"\" + filename;
-
-                using (FileStream fStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+            
+                for (int i = 0; i < parts; i++)
                 {
-                    for (int i = 0; i < parts; i++)
+                    bytes = UdpSocket.ReceiveFrom(packetReceive, ref remoteIp); // udp receive parts
+
+                    if (i == parts - 1 || parts == 1)
                     {
-                        bytes = UdpSocket.ReceiveFrom(packetReceive, ref remoteIp); // udp receive parts
-                        fStream.Write(packetReceive, 0, bytes);
-                        Handler.Send(TCP_OK_BYTE); // tcp 3 send                     
+                        byte[] newBuffer = new byte[bytes];
+                        Buffer.BlockCopy(packetReceive, 0, newBuffer, 0, bytes);
+                        data.AddRange(newBuffer);
+                        Handler.Send(TCP_OK_BYTE); // tcp 3 send  
+                        continue;
                     }
-                }
-           
-            }
+                  
+                    data.AddRange(packetReceive);
+                    Handler.Send(TCP_OK_BYTE); // tcp 3 send  
+                }              
+            }   
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -129,7 +101,9 @@ namespace ClientServerUdpFileExchangeWithTcpConfirmation
                     UdpSocket.Close();
                     UdpSocket = null;
                 }
-            }          
+            }
+
+            return data.ToArray();
         }
     }       
 }

@@ -13,8 +13,8 @@ namespace ClientServerUdpFileExchangeWithTcpConfirmation
         {
             TCP_OK_STRING = "<TCP_OK>";
             TCP_FAIL_STRING = "<TCP_FAIL>";
-            TCP_OK_BYTE = Encoding.UTF8.GetBytes("<TCP_OK>");
-            TCP_FAIL_BYTE = Encoding.UTF8.GetBytes("<TCP_FAIL>");
+            TCP_OK_BYTE = Encoding.Unicode.GetBytes("<TCP_OK>");
+            TCP_FAIL_BYTE = Encoding.Unicode.GetBytes("<TCP_FAIL>");
         }
     }
 }

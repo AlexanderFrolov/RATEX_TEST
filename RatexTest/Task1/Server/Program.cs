@@ -38,7 +38,7 @@ try
             Console.WriteLine("Waiting for connections...");
 
             s.Handler = null;
-            s.Handler = s.TcpSocket.Accept();        
+            s.Handler = s.TcpSocket.Accept();
             string tcpResponse = s.ReceiveTcpMessage(); // tcp receive 1 (filename and udpPort)
 
             if (tcpResponse == s.TCP_FAIL_STRING)
@@ -48,19 +48,26 @@ try
             }
 
             string[] msg = tcpResponse.Split(" ");
-            string fileName = tcpResponse.Split(" ")[0];
-            int udpPort = Int32.Parse(tcpResponse.Split(" ")[1]);
+            string fileName = msg[0];
+            int udpPort = Int32.Parse(msg[1]);
             Console.WriteLine("successfully received from client filename and udp port: {0}", tcpResponse);
-         
-            s.Handler.Send(s.TCP_OK_BYTE); // tcp 1 send
-            s.StartUdpReceiveFile(udpPort, fileName);
 
-            tcpResponse = s.ReceiveTcpMessage2(); // tcp receive 3
-            if (tcpResponse == s.TCP_OK_STRING)
+            s.Handler.Send(s.TCP_OK_BYTE); // tcp 1 send
+            byte[] data = s.StartUdpReceiveFile(udpPort, fileName);
+
+            tcpResponse = s.ReceiveTcpMessage(); // tcp receive 3
+            if (tcpResponse != s.TCP_OK_STRING)
             {
-                Console.WriteLine("Client has successfully received all confirmations. File passed successfully!");
+                Console.WriteLine("Client side error while uploading file. File will not be saved on the server.");
+                return;
             }
 
+            Console.WriteLine("Client has successfully received all confirmations. File passed successfully!");
+
+            Directory.CreateDirectory(s.DirectoryName);        
+            string path = s.DirectoryName + @"\" + fileName;
+            File.WriteAllBytes(path, data);
+          
         }
         catch (Exception ex)
         {
@@ -69,11 +76,11 @@ try
         }
         finally
         {
-            if(s.Handler != null)
+            if (s.Handler != null)
             {
                 s.Handler.Shutdown(SocketShutdown.Both);
                 s.Handler.Close();
-            }       
+            }
         }
     }
 }
